@@ -1,8 +1,9 @@
 {
   "name": "gypsum",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
+  "homepage": "https://cuterebro.github.io/gypsum",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
