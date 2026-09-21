@@ -1,5 +1,6 @@
 <script>
-  let state = {
+  const key = 'gypsum_state';
+  const default_state = {
     volume: 300,
     density: 2,
     gypsum: 100,
@@ -9,12 +10,19 @@
     reserve: 10
   }
 
-  $: weight = state.volume * state.density * (1 + state.reserve/100)
-  $: fractions = state.gypsum + state.water + state.plasticizer + state.pigment
-  $: gypsum = weight * state.gypsum / fractions 
-  $: water = weight * state.water / fractions 
-  $: plasticizer = weight * state.plasticizer / fractions 
-  $: pigment = weight * state.pigment / fractions 
+  let stored = (typeof window !== 'undefined' && localStorage.getItem(key));
+  let state = $state(stored ? JSON.parse(stored) : default_state)
+
+  $effect(() => {
+    localStorage.setItem(key, JSON.stringify($state.snapshot(state)));
+  });
+
+  let weight = $derived(state.volume * state.density * (1 + state.reserve/100))
+  let fractions = $derived(state.gypsum + state.water + state.plasticizer + state.pigment)
+  let gypsum = $derived(weight * state.gypsum / fractions)
+  let water = $derived(weight * state.water / fractions)
+  let plasticizer = $derived(weight * state.plasticizer / fractions)
+  let pigment = $derived(weight * state.pigment / fractions)
 
 </script>
 
@@ -22,38 +30,38 @@
   <div id='inputs'>
     <h3>Исходные данные</h3>
     <div class='input'>
-      <label>Объём формы, мл:</label>
+      <label for=volume>Объём формы, мл:</label>
       <input name=volume min=0 type=number bind:value={state.volume} />  
     </div>
 
     <div class='input'>
-      <label>Плотность смеси, г/мл:</label>
-      <input name=volume type=number min=0.1 step=0.1 bind:value={state.density} />
+      <label for=density>Плотность смеси, г/мл:</label>
+      <input name=density type=number min=0.1 step=0.1 bind:value={state.density} />
     </div>
 
     <div class='input'>
-      <label>Гипс, массовые доли:</label>
-      <input name=volume type=number min=0 bind:value={state.gypsum} />
+      <label for=gypsum>Гипс, массовые доли:</label>
+      <input name=gypsum type=number min=0 bind:value={state.gypsum} />
     </div>
 
     <div class='input'>
-      <label>Вода, массовые доли:</label>
-      <input name=volume type=number min=0 bind:value={state.water} />
+      <label for=water>Вода, массовые доли:</label>
+      <input name=water type=number min=0 bind:value={state.water} />
     </div>
 
     <div class='input'>
-      <label>Пластификатор, массовые доли:</label>
-      <input name=volume type=number min=0 bind:value={state.plasticizer} />
+      <label for=plasticizer>Пластификатор, массовые доли:</label>
+      <input name=plasticizer type=number min=0 bind:value={state.plasticizer} />
     </div>
 
     <div class='input'>
-      <label>Пигмент, массовые доли:</label>
-      <input name=volume type=number min=0 bind:value={state.pigment} />
+      <label for=pigment>Пигмент, массовые доли:</label>
+      <input name=pigment type=number min=0 bind:value={state.pigment} />
     </div>
 
     <div class='input'>
-      <label>Запас, %:</label>
-      <input name=volume type=number min=0 bind:value={state.reserve} />
+      <label for=reserve>Запас, %:</label>
+      <input name=reserve type=number min=0 bind:value={state.reserve} />
     </div>  
   </div>
 
